@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SHATIUM | Catálogo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --text-light: #f5f5f7;
+            --text-muted-dark: #86868b;
+            --accent-silver: #e2e2e7; 
+            --silver-gradient: linear-gradient(135deg, #ffffff 0%, #c7c7cc 45%, #8e8e93 85%, #e5e5ea 100%);
+            --silver-border: rgba(226, 226, 231, 0.22);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark); color: var(--text-light);
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; margin: 0; font-weight: 600; letter-spacing: 0.02em; }
+        p { margin: 0; letter-spacing: 0.01em; }
+
+        .reveal { opacity: 0; transform: translateY(45px); transition: opacity 1.2s, transform 1.2s; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.15s; }
+        .delay-2 { transition-delay: 0.3s; }
+        .delay-3 { transition-delay: 0.45s; }
+
+        section { padding: 80px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        
+        .hero { min-height: 50vh; justify-content: center; padding-top: 60px; }
+        .hero-brand-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); background: var(--silver-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        .logo-container {
+            width: clamp(120px, 20vw, 180px); height: clamp(120px, 20vw, 180px);
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 25px;
+        }
+        .logo-container img { width: 100%; height: 100%; object-fit: contain; }
+        .hero h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(0.9rem, 2vw, 1.2rem); font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted-dark); }
+
+        .main-category-title { font-size: 3rem; color: #fff; margin: 40px 0 20px 0; border-bottom: 1px solid var(--silver-border); padding-bottom: 15px; width: 100%; max-width: 1200px; text-align: center; }
+        .subcategory-title {
+            font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 400; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--text-muted-dark); margin: 40px 0 30px 0; display: flex; align-items: center; gap: 12px;
+        }
+
+        .showcase-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; width: 100%; max-width: 1200px; justify-items: center; margin-bottom: 40px; }
+        
+        .flip-card { background-color: transparent; width: 100%; max-width: 500px; height: 750px; perspective: 1000px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        @media (hover: hover) and (pointer: fine) { .flip-card:hover .flip-card-inner { transform: rotateY(180deg); } }
+        .flip-card.is-flipped .flip-card-inner { transform: rotateY(180deg); }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 24px;
+            border: 1px solid rgba(226, 226, 231, 0.15); background: linear-gradient(135deg, #141416 0%, #0a0a0c 100%);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); padding: 40px 30px; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .flip-card-back { transform: rotateY(180deg); background: linear-gradient(135deg, #0a0a0c 0%, #1a1a1d 100%); justify-content: flex-start; align-items: center; text-align: center; }
+
+        .card-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--accent-silver); margin-bottom: 25px; text-align: center; }
+        .card-front-content { display: flex; flex-direction: column; align-items: center; gap: 20px; height: 100%; width: 100%; }
+        .card-img-container { width: 100%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+        .card-img-container img { max-height: 220px; object-fit: contain; }
+        .card-accords { display: flex; flex-direction: column; width: 100%; align-items: center; }
+        .accords-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted-dark); margin-bottom: 15px; text-align: center; }
+        .accord-bar {
+            height: 22px; border-radius: 4px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.3); padding: 0 10px; white-space: nowrap; overflow: hidden;
+        }
+
+        .pyramid-level { margin-bottom: 12px; width: 100%; }
+        .pyramid-level h5 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-silver); margin: 0 0 5px 0; border-bottom: 1px solid rgba(226, 226, 231, 0.2); padding-bottom: 3px; display: inline-block; }
+        .pyramid-level strong { color: var(--text-light); font-weight: 500; display: block; font-family: 'Playfair Display', serif; font-size: 0.95rem; line-height: 1.4; }
+        
+        .flip-hint { font-size: 0.75rem; color: var(--text-muted-dark); font-style: italic; margin-top: auto; text-align: center; width: 100%; padding-top: 10px; }
+
+        @media (max-width: 600px) { 
+            .flip-card { height: 820px; } 
+            .flip-card-front, .flip-card-back { padding: 30px 20px; } 
+            .card-title { font-size: 1.6rem; margin-bottom: 15px; }
+            .pyramid-level strong { font-size: 0.9rem; }
+        }
+
+        .price-section { width: 100%; background-color: var(--bg-dark); padding: 20px 20px 0px 20px; display: flex; flex-direction: column; align-items: center; }
+        .price-table-wrapper { background: #ffffff; color: #000; border-radius: 20px; padding: 40px; max-width: 650px; width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.3); font-family: 'Montserrat', sans-serif; }
+        .price-table-wrapper h2 { font-family: 'Playfair Display', serif; text-align: center; font-size: 2.5rem; margin-bottom: 30px; font-weight: 600; color: #1d1d1f; }
+        .price-table { width: 100%; border-collapse: collapse; text-align: center; }
+        .price-table th { font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; color: #6e6e73; padding-bottom: 15px; border-bottom: 1px solid #e2e2e7; font-weight: 600; }
+        .price-table td { padding: 20px 0; font-size: 1.2rem; font-weight: 700; color: #1d1d1f; border-bottom: 1px solid #e2e2e7; }
+        .price-table tr:last-child td { border-bottom: none; padding-bottom: 0; }
+        .price-table td:first-child { text-align: left; color: #6e6e73; font-weight: 600; }
+
+        /* Sección Elegir Frasco y Contacto */
+        .info-box {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(226, 226, 231, 0.15); border-radius: 20px; padding: 40px;
+            max-width: 800px; width: 100%; text-align: center; margin-top: 50px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+        .info-box p { font-size: 1.1rem; line-height: 1.8; color: var(--accent-silver); font-family: 'Playfair Display', serif; font-style: italic; margin-bottom: 30px; }
+        .btn-contact {
+            display: inline-block; background: var(--silver-gradient); color: #000; padding: 15px 40px; border-radius: 30px; text-decoration: none;
+            font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-contact:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
+
+        /* Redes Sociales y Promociones */
+        .social-promo-section { margin-top: 60px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 40px; }
+        .social-icons { display: flex; gap: 30px; margin-bottom: 15px; }
+        .social-icons a {
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s, transform 0.3s;
+        }
+        .social-icons a:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px); }
+        .social-icons svg { width: 24px; height: 24px; fill: var(--text-light); }
+        .promo-text { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; letter-spacing: 1px; color: var(--text-muted-dark); text-transform: uppercase; text-align: center; line-height: 1.5; }
+        
+        .shipping-text { font-family: 'Montserrat', sans-serif; font-size: 0.8rem; letter-spacing: 3px; color: #555; text-transform: uppercase; margin-top: 40px; padding-bottom: 40px; }
+        
+        footer { background-color: #000; border-top: 1px solid #1c1c1e; color: var(--text-muted-dark); text-align: center; padding: 40px 20px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <section class="hero reveal">
+        <div class="hero-brand-wrapper">
+            <h1>Catálogo Essentials</h1>
+            <div class="logo-container">
+                <img src="shat1.png" alt="Logotipo SHATIUM" onerror="this.style.opacity='0'">
+            </div>
+            <h2>perfumes inspiración</h2>
+        </div>
+    </section>
+
+    <!-- CATEGORÍA ESSENTIALS -->
+    <section class="reveal" style="padding-top: 20px; padding-bottom: 20px;">
+        <h2 class="main-category-title">Categoría Essentials</h2>
+        
+        <!-- HOMBRE -->
+        <h3 class="subcategory-title">para hombre</h3>
+        <div class="showcase-container">
+            
+            <!-- Toy Boy Moschino -->
+            <div class="flip-card reveal delay-1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Toy Boy - Moschino</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat1tb.jpg" alt="Toy Boy Moschino"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #e60066; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Rosas</div><div class="accord-bar" style="width: 90%; background-color: #ff8da1; color: #000; text-shadow: none;">Florales</div><div class="accord-bar" style="width: 80%; background-color: #8b5a2b; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Amaderado</div><div class="accord-bar" style="width: 70%; background-color: #e6e6fa; color: #000; text-shadow: none;">Almizclado</div><div class="accord-bar" style="width: 65%; background-color: #d2b48c; color: #000; text-shadow: none;">Especiado Suave</div><div class="accord-bar" style="width: 60%; background-color: #90ee90; color: #000; text-shadow: none;">Fresco Especiado</div><div class="accord-bar" style="width: 55%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 50%; background-color: #66cdaa; color: #000; text-shadow: none;">Aromático</div><div class="accord-bar" style="width: 45%; background-color: #d2691e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cálido Especiado</div><div class="accord-bar" style="width: 40%; background-color: #ff69b4; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Pimienta Rosa, Pera, Nuez Moscada, Elemí, Bergamota</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Rosa, Clavo de Olor, Magnolia, Lino</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Vetiver, Cachemira, Sándalo, Ámbar, Sylkolide</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,36.96 56.92820323027551,48.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 34.20369663497184,42.879999999999995" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="36.96" r="1.5" fill="#4a7df5" /><circle cx="56.92820323027551" cy="48.0" r="1.5" fill="#4a7df5" /><circle cx="77.71281292110204" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="84.0" r="1.5" fill="#4a7df5" /><circle cx="22.28718707889796" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="34.20369663497184" cy="42.879999999999995" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Allure Homme Sport -->
+            <div class="flip-card reveal delay-2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Allure Homme Sport</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat2.jpg" alt="Allure Homme Sport"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #ffff00; color: #000; text-shadow: none;">Cítrico</div><div class="accord-bar" style="width: 90%; background-color: #66cdaa; color: #000; text-shadow: none;">Aromático</div><div class="accord-bar" style="width: 80%; background-color: #fffacd; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 70%; background-color: #f0f8ff; color: #000; text-shadow: none;">Aldehídico</div><div class="accord-bar" style="width: 65%; background-color: #4682b4; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Marino</div><div class="accord-bar" style="width: 60%; background-color: #ff69b4; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 55%; background-color: #90ee90; color: #000; text-shadow: none;">Fresco Especiado</div><div class="accord-bar" style="width: 50%; background-color: #e0ffff; color: #000; text-shadow: none;">Fresco</div><div class="accord-bar" style="width: 45%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 40%; background-color: #faebd7; color: #000; text-shadow: none;">Atalcado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Naranja, Notas Marinas, Aldehídos, Mandarina Roja</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Pimienta, Neroli, Cedro</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Vainilla, Haba Tonka, Almizcle, Ámbar, Vetiver</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,25.44 70.78460969082653,40.0 66.62768775266122,61.599999999999994 50.0,71.2 33.372312247338776,61.599999999999994 26.998365275485313,38.72" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="25.44" r="1.5" fill="#4a7df5" /><circle cx="70.78460969082653" cy="40.0" r="1.5" fill="#4a7df5" /><circle cx="66.62768775266122" cy="61.599999999999994" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="71.2" r="1.5" fill="#4a7df5" /><circle cx="33.372312247338776" cy="61.599999999999994" r="1.5" fill="#4a7df5" /><circle cx="26.998365275485313" cy="38.72" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MUJER -->
+        <h3 class="subcategory-title">para mujer</h3>
+        <div class="showcase-container">
+            
+            <!-- Meow Katy Perry -->
+            <div class="flip-card reveal delay-1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Meow - Katy Perry</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat3.jpg" alt="Meow Katy Perry"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #FCF4A3; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 95%; background-color: #F0F2F8; color: #000; text-shadow: none;">Floral Blanco</div><div class="accord-bar" style="width: 90%; background-color: #FF684C; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Afrutados</div><div class="accord-bar" style="width: 85%; background-color: #F45763; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 75%; background-color: #EFE0D4; color: #000; text-shadow: none;">Atalcado</div><div class="accord-bar" style="width: 70%; background-color: #FCFA8E; color: #000; text-shadow: none;">Cítrico</div><div class="accord-bar" style="width: 65%; background-color: #C0EBEB; color: #000; text-shadow: none;">Fresco</div><div class="accord-bar" style="width: 60%; background-color: #A3DFE6; color: #000; text-shadow: none;">Acuático</div><div class="accord-bar" style="width: 55%; background-color: #D49D79; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 50%; background-color: #E8D7F0; color: #000; text-shadow: none;">Almizclado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Pera, Tangerina, Gardenia, Jazmín</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Madreselva, Flor del Naranjo, Lirio</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Vainilla, Ámbar, Almizcle, Sándalo</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,21.6 62.47076581449592,44.8 63.85640646055102,60.0 50.0,63.2 38.91487483155918,58.4 26.44410901706327,38.4" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="21.6" r="1.5" fill="#4a7df5" /><circle cx="62.47076581449592" cy="44.8" r="1.5" fill="#4a7df5" /><circle cx="63.85640646055102" cy="60.0" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="63.2" r="1.5" fill="#4a7df5" /><circle cx="38.91487483155918" cy="58.4" r="1.5" fill="#4a7df5" /><circle cx="26.44410901706327" cy="38.4" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Queen Armaf -->
+            <div class="flip-card reveal delay-2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Queen - Armaf</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat4.jpg" alt="Queen Armaf"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #eaddcf; color: #000; text-shadow: none;">Atalcado</div><div class="accord-bar" style="width: 90%; background-color: #8b5a2b; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Amaderado</div><div class="accord-bar" style="width: 80%; background-color: #e6ffe6; color: #000; text-shadow: none;">Nardos</div><div class="accord-bar" style="width: 70%; background-color: #f0f8ff; color: #000; text-shadow: none;">Floral Blanco</div><div class="accord-bar" style="width: 65%; background-color: #d2691e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cálido Especiado</div><div class="accord-bar" style="width: 60%; background-color: #ff7f50; color: #000; text-shadow: none;">Afrutados</div><div class="accord-bar" style="width: 55%; background-color: #32cd32; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Verde</div><div class="accord-bar" style="width: 50%; background-color: #ff69b4; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 45%; background-color: #bc8f8f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Animálico</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Nardos, Notas Verdes</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Higo, Especias</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Notas Atalcadas, Sándalo</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,28.64 61.639381426862855,45.28 77.71281292110204,68.0 50.0,70.56 28.93826217996245,64.16 30.8781590844396,40.96" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="28.64" r="1.5" fill="#4a7df5" /><circle cx="61.639381426862855" cy="45.28" r="1.5" fill="#4a7df5" /><circle cx="77.71281292110204" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="70.56" r="1.5" fill="#4a7df5" /><circle cx="28.93826217996245" cy="64.16" r="1.5" fill="#4a7df5" /><circle cx="30.8781590844396" cy="40.96" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Live Jennifer Lopez -->
+            <div class="flip-card reveal delay-3">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Live - JLo</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat5.jpg" alt="Live JLo"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #dc143c; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 90%; background-color: #ff4500; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Afrutados</div><div class="accord-bar" style="width: 80%; background-color: #afeeee; color: #000; text-shadow: none;">Fresco</div><div class="accord-bar" style="width: 70%; background-color: #ffff00; color: #000; text-shadow: none;">Cítrico</div><div class="accord-bar" style="width: 65%; background-color: #deb887; color: #000; text-shadow: none;">Caramelo</div><div class="accord-bar" style="width: 60%; background-color: #ffb6c1; color: #000; text-shadow: none;">Florales</div><div class="accord-bar" style="width: 55%; background-color: #ffcc66; color: #000; text-shadow: none;">Tropical</div><div class="accord-bar" style="width: 50%; background-color: #faebd7; color: #000; text-shadow: none;">Atalcado</div><div class="accord-bar" style="width: 45%; background-color: #ffffe0; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 40%; background-color: #8b5a2b; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Amaderado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Piña, Limón Siciliano, Naranja Italiana</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Flor del Grosellero, Peonía, Violeta</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Caramelo, Sándalo, Vainilla, Haba Tonka</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,20.0 70.23035343240448,40.32 59.422356393174695,57.44 50.0,62.56 43.07179676972449,56.0 31.709543472072657,41.44" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="20.0" r="1.5" fill="#4a7df5" /><circle cx="70.23035343240448" cy="40.32" r="1.5" fill="#4a7df5" /><circle cx="59.422356393174695" cy="57.44" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="62.56" r="1.5" fill="#4a7df5" /><circle cx="43.07179676972449" cy="56.0" r="1.5" fill="#4a7df5" /><circle cx="31.709543472072657" cy="41.44" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- PRECIOS ESSENTIALS Y BOTÓN -->
+    <section class="price-section reveal" style="padding-top: 0;">
+        <div class="price-table-wrapper">
+            <h2>Essentials</h2>
+            <table class="price-table">
+                <thead>
+                    <tr><th>TAMAÑO</th><th>CLÁSICO</th><th>+20% ESENCIA</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>30 ml</td><td>$13</td><td>$15</td></tr>
+                    <tr><td>50 ml</td><td>$17</td><td>$20</td></tr>
+                    <tr><td>100 ml</td><td>$25</td><td>$28</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- INFO BOX ESSENTIALS -->
+        <div class="info-box reveal delay-1">
+            <p>
+                Todos los perfumes son de la más alta calidad y tienen un dinamismo que te permite elegir en qué frasco, de nuestro stock disponible, quieres tu nuevo perfume SHATIUM.
+            </p>
+            <a href="#redes" class="btn-contact">Contáctanos</a>
+        </div>
+    </section>
+
+    <!-- CATEGORÍA ESSENTIAL+ -->
+    <section class="reveal" style="padding-top: 20px; padding-bottom: 20px;">
+        <h2 class="main-category-title">Categoría Essential+</h2>
+        
+        <!-- UNISEX -->
+        <h3 class="subcategory-title">perfumería unisex</h3>
+        <div class="showcase-container">
+            
+            <!-- Erba Pura -->
+            <div class="flip-card reveal delay-1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Erba Pura - Xerjoff</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat6.jpg" alt="Erba Pura"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #ffff00; color: #000; text-shadow: none;">Cítrico</div><div class="accord-bar" style="width: 95%; background-color: #ff4500; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Afrutados</div><div class="accord-bar" style="width: 80%; background-color: #f45b69; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 70%; background-color: #e6e6fa; color: #000; text-shadow: none;">Almizclado</div><div class="accord-bar" style="width: 65%; background-color: #f5deb3; color: #000; text-shadow: none;">Atalcado</div><div class="accord-bar" style="width: 60%; background-color: #fffacd; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 55%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 45%; background-color: #98fb98; color: #000; text-shadow: none;">Fresco Especiado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Naranja Siciliana, Bergamota, Limón Siciliano</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Frutas</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Almizcle Blanco, Vainilla de Madagascar, Ámbar</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,20.0 77.71281292110204,36.0 66.35055962345021,61.44 50.0,70.88 40.30051547761428,57.6 22.287187078897965,36.0" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="20.0" r="1.5" fill="#4a7df5" /><circle cx="77.71281292110204" cy="36.0" r="1.5" fill="#4a7df5" /><circle cx="66.35055962345021" cy="61.44" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="70.88" r="1.5" fill="#4a7df5" /><circle cx="40.30051547761428" cy="57.6" r="1.5" fill="#4a7df5" /><circle cx="22.287187078897965" cy="36.0" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Smoking Hot -->
+            <div class="flip-card reveal delay-2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Smoking Hot - Kilian</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat7.jpg" alt="Smoking Hot"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #b8860b; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Tabaco</div><div class="accord-bar" style="width: 95%; background-color: #ff4500; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Afrutados</div><div class="accord-bar" style="width: 90%; background-color: #778899; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ahumado</div><div class="accord-bar" style="width: 80%; background-color: #f45b69; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 75%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Canela</div><div class="accord-bar" style="width: 70%; background-color: #fffacd; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 65%; background-color: #d2691e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cálido Especiado</div><div class="accord-bar" style="width: 55%; background-color: #b0e0e6; color: #000; text-shadow: none;">Fresco</div><div class="accord-bar" style="width: 50%; background-color: #3cb371; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Verde</div><div class="accord-bar" style="width: 45%; background-color: #e9967a; color: #000; text-shadow: none;">Especiado Suave</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Manzana, Humo, Canela</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Tabaco, Vainilla, Musgo</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Vainilla Bourbon, Regaliz, Orcanox, Iso E Super, Esclarea</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,42.72 53.048409421321224,50.24 76.05004414583591,67.03999999999999 50.0,80.16 22.28718707889796,68.0 43.348924898935515,48.16" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="42.72" r="1.5" fill="#4a7df5" /><circle cx="53.048409421321224" cy="50.24" r="1.5" fill="#4a7df5" /><circle cx="76.05004414583591" cy="67.03999999999999" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="80.16" r="1.5" fill="#4a7df5" /><circle cx="22.28718707889796" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="43.348924898935515" cy="48.16" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Arabians Tonka -->
+            <div class="flip-card reveal delay-3">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Arabians Tonka - Montale</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat8.jpg" alt="Arabians Tonka"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #dc143c; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Dulce</div><div class="accord-bar" style="width: 95%; background-color: #fffacd; color: #000; text-shadow: none;">Avainillado</div><div class="accord-bar" style="width: 85%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 75%; background-color: #696969; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Madera de Oud</div><div class="accord-bar" style="width: 70%; background-color: #d2691e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cálido Especiado</div><div class="accord-bar" style="width: 60%; background-color: #ff69b4; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Rosas</div><div class="accord-bar" style="width: 55%; background-color: #e6e6fa; color: #000; text-shadow: none;">Almizclado</div><div class="accord-bar" style="width: 50%; background-color: #b0c4de; color: #000; text-shadow: none;">Metálico</div><div class="accord-bar" style="width: 45%; background-color: #66cdaa; color: #000; text-shadow: none;">Aromático</div><div class="accord-bar" style="width: 40%; background-color: #f5deb3; color: #000; text-shadow: none;">Atalcado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Azafrán, Bergamota</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Madera de Oud, Rosa de Bulgaria</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Haba Tonka, Caña de Azúcar, Ámbar, Almizcle Blanco, Musgo de Roble</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,41.44 53.048409421321224,50.24 72.17025033688164,64.8 50.0,79.84 22.28718707889796,68.0 42.79466864051347,47.839999999999996" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="41.44" r="1.5" fill="#4a7df5" /><circle cx="53.048409421321224" cy="50.24" r="1.5" fill="#4a7df5" /><circle cx="72.17025033688164" cy="64.8" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="79.84" r="1.5" fill="#4a7df5" /><circle cx="22.28718707889796" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="42.79466864051347" cy="47.839999999999996" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+            
+            <!-- Ombré Leather -->
+            <div class="flip-card reveal delay-1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Ombré Leather - Tom Ford</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat9.jpg" alt="Ombré Leather"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #8b4513; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cuero</div><div class="accord-bar" style="width: 85%; background-color: #a0522d; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Amaderado</div><div class="accord-bar" style="width: 65%; background-color: #e0ffff; color: #000; text-shadow: none;">Ozónico</div><div class="accord-bar" style="width: 60%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Animálico</div><div class="accord-bar" style="width: 55%; background-color: #afeeee; color: #000; text-shadow: none;">Acuático</div><div class="accord-bar" style="width: 50%; background-color: #f8f8ff; color: #000; text-shadow: none;">Floral Blanco</div><div class="accord-bar" style="width: 45%; background-color: #deb887; color: #000; text-shadow: none;">Tabaco</div><div class="accord-bar" style="width: 40%; background-color: #a9a9a9; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ahumado</div><div class="accord-bar" style="width: 35%; background-color: #d8bfd8; color: #000; text-shadow: none;">Iris</div><div class="accord-bar" style="width: 30%; background-color: #faebd7; color: #000; text-shadow: none;">Atalcado</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Hojas de Violeta, Cedro</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Jazmín Sambac, Raíz de Lirio</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Cuero, Notas Amaderadas, Tabaco</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,36.0 54.71117819658735,49.28 75.49578788741388,66.72 50.0,80.48 22.28718707889796,68.0 36.143593539448986,44.0" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="36.0" r="1.5" fill="#4a7df5" /><circle cx="54.71117819658735" cy="49.28" r="1.5" fill="#4a7df5" /><circle cx="75.49578788741388" cy="66.72" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="80.48" r="1.5" fill="#4a7df5" /><circle cx="22.28718707889796" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="36.143593539448986" cy="44.0" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+            
+            <!-- Baccarat Rouge 540 -->
+            <div class="flip-card reveal delay-2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="card-title">Baccarat Rouge 540 - MFK</div>
+                        <div class="card-front-content">
+                            <div class="card-img-container"><img src="shat10.jpg" alt="Baccarat Rouge 540"></div>
+                            <div class="card-accords">
+                                <div class="accords-title">Acordes Principales</div>
+<div class="accord-bar" style="width: 100%; background-color: #8b4513; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Amaderado</div><div class="accord-bar" style="width: 95%; background-color: #d2691e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Ámbar</div><div class="accord-bar" style="width: 70%; background-color: #cd5c5c; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Cálido Especiado</div><div class="accord-bar" style="width: 50%; background-color: #b0c4de; color: #000; text-shadow: none;">Metálico</div><div class="accord-bar" style="width: 45%; background-color: #98fb98; color: #000; text-shadow: none;">Fresco Especiado</div><div class="accord-bar" style="width: 40%; background-color: #66cdaa; color: #000; text-shadow: none;">Aromático</div><div class="accord-bar" style="width: 35%; background-color: #f8f8ff; color: #000; text-shadow: none;">Floral Blanco</div><div class="accord-bar" style="width: 30%; background-color: #cd853f; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Animálico</div><div class="accord-bar" style="width: 25%; background-color: #e0ffff; color: #000; text-shadow: none;">Fresco</div>                            </div>
+                        </div>
+                        <div class="flip-hint">(Toca para ver la Pirámide y Uso ↻)</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="card-title">Anatomía del Perfume</div>
+                        <div class="pyramid-level"><h5>Notas de Salida</h5><strong>Azafrán, Jazmín</strong></div>
+                        <div class="pyramid-level"><h5>Corazón</h5><strong>Amberwood, Ámbar Gris, Hedione</strong></div>
+                        <div class="pyramid-level"><h5>Base</h5><strong>Resina de Abeto, Cedro, Azúcar, Ambroxan, Musgo de Roble</strong></div>
+
+    <div style="width: 100%; height: 180px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #86868b; margin-bottom: 5px;">Cuándo Usarlo</div>
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; max-height: 140px;">
+            <polygon points="50.0,20.0 77.71281292110204,36.0 77.71281292110204,68.0 50.0,84.0 22.28718707889796,68.0 22.287187078897965,36.0" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <polygon points="50.0,41.34 59.23183080434212,46.67 59.23183080434212,57.33 50.0,62.66 40.76816919565788,57.33 40.76816919565788,46.67" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><polygon points="50.0,30.67 68.47232186272208,41.335 68.47232186272208,62.665 50.0,73.33 31.527678137277924,62.665 31.527678137277928,41.335" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <line x1="50.0" y1="20.0" x2="50.0" y2="84.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="36.0" x2="22.28718707889796" y2="68.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/><line x1="77.71281292110204" y1="68.0" x2="22.287187078897965" y2="36.0" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            <polygon points="50.0,28.96 61.08512516844082,45.6 77.71281292110204,68.0 50.0,82.4 22.28718707889796,68.0 32.81805598891674,42.08" fill="rgba(120, 160, 255, 0.35)" stroke="rgba(120, 160, 255, 0.8)" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="50.0" cy="28.96" r="1.5" fill="#4a7df5" /><circle cx="61.08512516844082" cy="45.6" r="1.5" fill="#4a7df5" /><circle cx="77.71281292110204" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="50.0" cy="82.4" r="1.5" fill="#4a7df5" /><circle cx="22.28718707889796" cy="68.0" r="1.5" fill="#4a7df5" /><circle cx="32.81805598891674" cy="42.08" r="1.5" fill="#4a7df5" />
+            
+            <text x="50" y="14" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">☀️ Día</text>
+            <text x="90" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">⛱️ Verano</text>
+            <text x="90" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍁 Otoño</text>
+            <text x="50" y="93" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🌙 Noche</text>
+            <text x="10" y="73" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">❄️ Invierno</text>
+            <text x="10" y="34" font-size="6" fill="#a1a1a6" text-anchor="middle" font-family="Montserrat">🍃 Primav.</text>
+        </svg>
+    </div>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- PRECIOS ESSENTIAL PLUS Y BOTÓN -->
+    <section class="price-section reveal" style="padding-top: 0;">
+        <div class="price-table-wrapper" style="background: #141416; color: #f5f5f7; border: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="color: #e2e2e7;">Essential Plus</h2>
+            <table class="price-table">
+                <thead>
+                    <tr><th style="border-bottom: 1px solid rgba(255,255,255,0.1);">TAMAÑO</th><th style="border-bottom: 1px solid rgba(255,255,255,0.1);">CLÁSICO</th><th style="border-bottom: 1px solid rgba(255,255,255,0.1);">+20% ESENCIA</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #86868b;">30 ml</td><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color:#fff;">$14</td><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color:#fff;">$16</td></tr>
+                    <tr><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #86868b;">50 ml</td><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color:#fff;">$18</td><td style="border-bottom: 1px solid rgba(255,255,255,0.1); color:#fff;">$20</td></tr>
+                    <tr><td style="border-bottom: none; color: #86868b;">100 ml</td><td style="border-bottom: none; color:#fff;">$27</td><td style="border-bottom: none; color:#fff;">$30</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- INFO BOX ESSENTIAL PLUS -->
+        <div class="info-box reveal delay-1">
+            <p>
+                Todos los perfumes son de la más alta calidad y tienen un dinamismo que te permite elegir en qué frasco, de nuestro stock disponible, quieres tu nuevo perfume SHATIUM.
+            </p>
+            <a href="#redes" class="btn-contact">Contáctanos</a>
+        </div>
+        
+        <!-- REDES SOCIALES Y PROMOS -->
+        <div class="social-promo-section reveal delay-2" id="redes">
+            <div class="social-icons">
+                <a href="https://www.instagram.com/shatium_ec/" target="_blank" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+                <a href="https://wa.me/shatymikey?s=p" target="_blank" aria-label="WhatsApp">
+                    <svg viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.384 0 12.032c0 2.115.548 4.17 1.59 5.986L.092 23.86l6.012-1.576c1.761.944 3.738 1.441 5.927 1.441 6.649 0 12.032-5.384 12.032-12.032C24.064 5.384 18.68 0 12.031 0zm0 21.611c-1.815 0-3.593-.487-5.148-1.408l-.369-.219-3.821 1.002.998-3.725-.24-.383A9.851 9.851 0 012.118 12.03c0-5.485 4.464-9.949 9.913-9.949 5.449 0 9.912 4.464 9.912 9.949 0 5.484-4.463 9.949-9.912 9.949zm5.438-7.424c-.298-.149-1.761-.871-2.035-.97-.273-.1-.472-.149-.672.15-.198.297-.77 1.07-.945 1.283-.174.215-.347.241-.645.092-.298-.15-1.258-.464-2.396-1.482-.886-.793-1.485-1.774-1.66-2.072-.173-.298-.019-.46.13-.609.135-.135.298-.348.447-.521.149-.174.199-.298.298-.497.1-.198.05-.371-.024-.52-.075-.15-.672-1.62-.921-2.22-.243-.585-.489-.505-.672-.514-.173-.01-.372-.01-.57-.01-.199 0-.521.074-.794.372-.274.297-1.044 1.02-1.044 2.488s1.07 2.886 1.219 3.084c.15.198 2.102 3.208 5.092 4.5 2.115.914 2.924 1.1 4.025.92 1.1-.181 3.528-1.442 4.025-2.836.497-1.395.497-2.589.348-2.837-.15-.248-.546-.397-.844-.546z"/></svg>
+                </a>
+            </div>
+            <div class="promo-text">No te olvides de preguntar sobre nuestros combos y obsequios.</div>
+        </div>
+        
+        <div class="shipping-text reveal delay-3">
+            Envíos a todo el Ecuador 🇪🇨
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <span>© 2026 SHATIUM. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const reveals = document.querySelectorAll('.reveal');
+            const revealOnScroll = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('active'); }
+                });
+            }, { threshold: 0.05, rootMargin: "0px 0px -40px 0px" });
+            reveals.forEach(reveal => revealOnScroll.observe(reveal));
+            setTimeout(() => { document.querySelector('.hero').classList.add('active'); }, 100);
+            document.querySelectorAll('.flip-card').forEach(card => {
+                card.addEventListener('click', function() { this.classList.toggle('is-flipped'); });
+            });
+            
+            /* Smooth Scroll para el botón Contáctanos */
+            document.querySelectorAll('.btn-contact').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
